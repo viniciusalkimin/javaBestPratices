@@ -1,5 +1,6 @@
 package br.com.alura.adopet.api.controller;
 
+import br.com.alura.adopet.api.dto.AdocaoDto;
 import br.com.alura.adopet.api.model.Adocao;
 import br.com.alura.adopet.api.model.StatusAdocao;
 import br.com.alura.adopet.api.model.StatusNotificacao;
@@ -23,10 +24,10 @@ public class AdocaoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<String> solicitar(@RequestBody @Valid Adocao adocao) {
+    public ResponseEntity<String> solicitar(@RequestBody @Valid AdocaoDto adocaoDto) {
         try {
-            adocaoService.solicitarAdocao(adocao);
-            emailService.dispararEmailNotificação(adocao, StatusNotificacao.SOLICITADO);
+            adocaoService.solicitarAdocao(adocaoDto);
+
             return ResponseEntity.ok().build();
         } catch (ValidationException validationException) {
             return ResponseEntity.badRequest().body(validationException.getMessage());
@@ -35,18 +36,16 @@ public class AdocaoController {
 
     @PutMapping("/aprovar")
     @Transactional
-    public ResponseEntity<String> aprovar(@RequestBody @Valid Adocao adocao) {
-        adocaoService.alterarStatus(adocao, StatusAdocao.APROVADO);
-        emailService.dispararEmailNotificação(adocao, StatusNotificacao.APROVADO);
+    public ResponseEntity<String> aprovar(@RequestBody @Valid AdocaoDto dto) {
+        adocaoService.alterarStatus(dto, StatusAdocao.APROVADO);
 
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/reprovar")
     @Transactional
-    public ResponseEntity<String> reprovar(@RequestBody @Valid Adocao adocao) {
-        adocaoService.alterarStatus(adocao, StatusAdocao.REPROVADO);
-        emailService.dispararEmailNotificação(adocao, StatusNotificacao.REPROVADO);
+    public ResponseEntity<String> reprovar(@RequestBody @Valid AdocaoDto dto) {
+        adocaoService.alterarStatus(dto, StatusAdocao.REPROVADO);
 
         return ResponseEntity.ok().build();
     }

@@ -1,5 +1,6 @@
 package br.com.alura.adopet.api.service.impl;
 
+import br.com.alura.adopet.api.dto.AdocaoDto;
 import br.com.alura.adopet.api.model.Adocao;
 import br.com.alura.adopet.api.model.StatusNotificacao;
 import br.com.alura.adopet.api.service.EmailService;

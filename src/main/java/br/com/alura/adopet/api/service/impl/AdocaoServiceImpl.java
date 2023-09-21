@@ -1,9 +1,12 @@
 package br.com.alura.adopet.api.service.impl;
 
+import br.com.alura.adopet.api.dto.AdocaoDto;
 import br.com.alura.adopet.api.model.Adocao;
 import br.com.alura.adopet.api.model.StatusAdocao;
+import br.com.alura.adopet.api.model.StatusNotificacao;
 import br.com.alura.adopet.api.repository.AdocaoRepository;
 import br.com.alura.adopet.api.service.AdocaoService;
+import br.com.alura.adopet.api.service.EmailService;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,14 +19,24 @@ public class AdocaoServiceImpl implements AdocaoService {
 
     @Autowired
     private AdocaoRepository adocaoRepository;
+
+    @Autowired
+    private EmailService emailService;
     @Override
-    public void alterarStatus(Adocao adocao, StatusAdocao statusAdocao) {
+    public void alterarStatus(AdocaoDto adocaoDto, StatusAdocao statusAdocao) {
+        Adocao adocao = adocaoRepository.findById(adocaoDto.idAdocao()).get();
         adocao.setStatus(statusAdocao);
         adocaoRepository.save(adocao);
+        if(statusAdocao == StatusAdocao.APROVADO) {
+            emailService.dispararEmailNotificação(adocao, StatusNotificacao.APROVADO);
+        } else{
+            emailService.dispararEmailNotificação(adocao, StatusNotificacao.REPROVADO);
+        }
     }
 
     @Override
-    public void solicitarAdocao(Adocao adocao) {
+    public void solicitarAdocao(AdocaoDto dto) {
+        Adocao adocao = adocaoRepository.findById(dto.idAdocao()).get();
         if (adocao.getPet().getAdotado() == true) {
             throw new ValidationException("Pet já foi adotado!");
         } else {
@@ -51,5 +64,6 @@ public class AdocaoServiceImpl implements AdocaoService {
         adocao.setData(LocalDateTime.now());
         adocao.setStatus(StatusAdocao.AGUARDANDO_AVALIACAO);
         adocaoRepository.save(adocao);
+        emailService.dispararEmailNotificação(adocao, StatusNotificacao.SOLICITADO);
     }
 }
