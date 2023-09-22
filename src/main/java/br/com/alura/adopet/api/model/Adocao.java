@@ -44,6 +44,14 @@ public class Adocao {
     @Column(name = "justificativa_status")
     private String justificativaStatus;
 
+    public Adocao(LocalDateTime data, Tutor tutor, Pet pet, String motivo, StatusAdocao status) {
+        this.data = data;
+        this.tutor = tutor;
+        this.pet = pet;
+        this.motivo = motivo;
+        this.status = status;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
